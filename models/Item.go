@@ -1,10 +1,11 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type Item struct {
-	Id            string  `json:"id"`
-	Name          string  `json:"name"`
-	Price         string  `json:"price"`
-	Rating        float64 `json:"rating"`
-	RatingCounter int     `json:"ratingCounter"`
-	Quantity      int     `json:"quantity"`
+	gorm.Model
+	Name     string    `json:"name"`
+	Price    string    `json:"price"`
+	Comments []Comment `gorm:"foreignKey:ItemRefer"`
+	Rating   float64   `json:"rating"`
 }
