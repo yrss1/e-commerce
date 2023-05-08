@@ -8,33 +8,33 @@ import (
 
 func main() {
 	database.Init()
-
 	rtr := gin.Default()
-	userRouter := rtr.Group("")
-	itemsRouter := rtr.Group("/items")
-	//reg auth
-	userRouter.POST("/registration", handlers.Registration)
-	userRouter.POST("/authorisation", handlers.Authorisation)
-	//items
-	itemsRouter.GET("", handlers.GetItems)
-	itemsRouter.GET("/:id", handlers.GetItem)
-	itemsRouter.GET("/sort", handlers.Filter)
-	//itemsRouter.POST("/:id/rate", handlers.GiveRating)
-	itemsRouter.POST("/create_item", handlers.AddItem)
-	itemsRouter.DELETE("/:id/delete", handlers.DeleteItem)
-	itemsRouter.GET("/:id/comments", handlers.GetCommentaries)
-	itemsRouter.POST("/create_comment", handlers.SetComment)
 
-	//get all comments
-	itemsRouter.GET("/comments", handlers.GetComments)
-	//get item with comments
-	itemsRouter.GET("/:id/with_comments", handlers.GetItemsWithComments)
+	auth := rtr.Group("/auth")
+	{
+		auth.POST("/sign-up", handlers.Registration)
+		auth.POST("/sign-in", handlers.Authorisation)
+	}
+
+	api := rtr.Group("/api")
+	{
+		items := api.Group("/items")
+		{
+			items.GET("", handlers.GetItems)    // get all items
+			items.GET("/sort", handlers.Filter) // Filtering items based on price, rating
+			items.POST("", handlers.AddItem)    // Publishing item
+
+			items.GET("/:id", handlers.GetItem)                            // get item by id
+			items.GET("/:id/with_comments", handlers.GetItemsWithComments) // get item with comments
+			items.DELETE("/:id", handlers.DeleteItem)                      // Purchasing item
+
+			items.GET("/:id/comments", handlers.GetCommentaries) // get item commments
+			items.POST("/:id/comments", handlers.SetComment)     //Commenting items + Giving rating for items
+
+			////get all comments
+			items.GET("/comments", handlers.GetComments) // just get all comments
+		}
+	}
 	rtr.Run("localhost:8088")
 
 }
-
-//rating
-//comment
-//4) Giving rating for items -> sql queries
-//5) Commenting items -> sql queries
-// 7) Purchasing item -> sql queries

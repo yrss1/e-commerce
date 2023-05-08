@@ -24,12 +24,14 @@ func GetComments(cnt *gin.Context) {
 }
 
 func SetComment(cnt *gin.Context) {
+	itemId := cnt.Param("id")
 	var newComment models.Comment
 	if err := cnt.BindJSON(&newComment); err != nil {
 		cnt.IndentedJSON(http.StatusBadRequest, gin.H{"message": "error"})
 		panic(err)
 		return
 	}
+	newComment.ItemRefer = middle.ConvertToUint(itemId)
 	database.DB.Create(&newComment)
 	controllers.SetRating(newComment.ItemRefer)
 	cnt.IndentedJSON(http.StatusCreated, newComment)
